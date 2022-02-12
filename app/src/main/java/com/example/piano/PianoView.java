@@ -21,7 +21,7 @@ public class PianoView extends View {
     private ArrayList<Key> whites = new ArrayList<>();
     private ArrayList<Key> blacks = new ArrayList<>();
     private int keyWidth, height;
-    private AudioSoundPlayer soundPlayer;
+    public AudioSoundPlayer soundPlayer;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);

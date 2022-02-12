@@ -7,6 +7,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.util.SparseArray;
+import android.view.View;
 
 import java.io.InputStream;
 
@@ -16,14 +17,23 @@ public class AudioSoundPlayer {
     private Context context;
     private static final SparseArray<String> SOUND_MAP = new SparseArray<>();
     public static final int MAX_VOLUME = 100, CURRENT_VOLUME = 90;
+    private String password = "";
+
+    public String getPassword(){
+        return password;
+    }
+
+    public void ResetPassword(){
+        password = "";
+    }
 
     static {
         // white keys sounds
-        SOUND_MAP.put(1, "note_do");
-        SOUND_MAP.put(2, "note_re");
-        SOUND_MAP.put(3, "note_mi");
-        SOUND_MAP.put(4, "note_fa");
-        SOUND_MAP.put(5, "note_sol");
+        SOUND_MAP.put(1, "c");
+        SOUND_MAP.put(2, "d");
+        SOUND_MAP.put(3, "e");
+        SOUND_MAP.put(4, "f");
+        SOUND_MAP.put(5, "g");
         SOUND_MAP.put(6, "note_la");
         SOUND_MAP.put(7, "note_si");
         SOUND_MAP.put(8, "second_do");
@@ -88,8 +98,9 @@ public class AudioSoundPlayer {
                 long fileSize = ad.getLength();
                 int bufferSize = 4096;
                 byte[] buffer = new byte[bufferSize];
-
-                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                password += Integer.toString(note) + "+";
+                System.out.println("Current password: " + password);
+                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_STEREO,
                         AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
 
                 float logVolume = (float) (1 - (Math.log(MAX_VOLUME - CURRENT_VOLUME) / Math.log(MAX_VOLUME)));
@@ -111,6 +122,8 @@ public class AudioSoundPlayer {
                 audioTrack.release();
 
             } catch (Exception e) {
+                System.out.println("Sound Playing Error");
+                e.printStackTrace();
             } finally {
                 if (audioTrack != null) {
                     audioTrack.release();
@@ -118,5 +131,4 @@ public class AudioSoundPlayer {
             }
         }
     }
-
 }
