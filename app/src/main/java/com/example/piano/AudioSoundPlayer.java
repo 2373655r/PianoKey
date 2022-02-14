@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -100,6 +101,7 @@ public class AudioSoundPlayer {
                 byte[] buffer = new byte[bufferSize];
                 password += Integer.toString(note) + "+";
                 System.out.println("Current password: " + password);
+                Log.d("PASSWORD", password);
                 audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_STEREO,
                         AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
 
