@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +30,7 @@ public class PianoView extends View {
     private ArrayList<Key> blacks = new ArrayList<>();
     private int keyWidth, height;
     public AudioSoundPlayer soundPlayer;
-    private Boolean[] keysPressed = new Boolean[24];
+    private Boolean[] keysPressed = new Boolean[25];
     private ArrayList<KeyEvent> events = new ArrayList<>();
 
     public ArrayList<KeyEvent> GetKeyEvents (){
@@ -99,24 +100,53 @@ public class PianoView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction() & MotionEvent.ACTION_MASK;
-
-        boolean isDownAction = action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_POINTER_DOWN;
-        boolean isUpAction = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP;
+        int action = event.getAction();
+        ArrayList<Key> PressedThisFrame = new ArrayList<>();
 
         for (int touchIndex = 0; touchIndex < event.getPointerCount(); touchIndex++) {
+
             float x = event.getX(touchIndex);
             float y = event.getY(touchIndex);
 
             Key k = keyForCoords(x,y);
 
             if (k != null) {
-
-                if (isUpAction && k.down) {
-                    k.down = false;
-                    keysPressed[k.sound] = false;
-                } else {
-                    k.down = isDownAction;
+                int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                switch (action & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Action only fires for primary pointer
+                        if (touchIndex == 0 && !k.down) {
+                            k.down = true;
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (!k.down) {
+                            k.down = true;
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        // Action only fires for primary pointer
+                        if (touchIndex == 0 && k.down) {
+                            k.down = false;
+                        }
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        if (pointerIndex == touchIndex) {
+                            if (k.down) {
+                                k.down = false;
+                            }
+                        }
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        if (pointerIndex == touchIndex && !k.down) {
+                            k.down = true;
+                        }
+                        break;
+                    default:
+                        k.down = false;
+                }
+                if (k.down) {
+                    PressedThisFrame.add(k);
                 }
             }
         }
@@ -125,21 +155,32 @@ public class PianoView extends View {
         tmp.addAll(blacks);
 
         for (Key k : tmp) {
+
+            if (!PressedThisFrame.contains(k)) {
+                k.down = false;
+            }
+
+            if (!keysPressed[k.sound] && k.down) {
+                Log.d("Key_Press", "key DOWN " + k.sound);
+                //Create a key event and add it to the events list
+                KeyEvent ke = new KeyEvent(k.sound, System.currentTimeMillis(),true);
+                events.add(ke);
+
+                keysPressed[k.sound] = true;
+            } else if(keysPressed[k.sound] && !k.down) {
+                Log.d("Key_Press", "key UP " + k.sound);
+                //Create a key event and add it to the events list
+                KeyEvent ke = new KeyEvent(k.sound, System.currentTimeMillis(),false);
+                events.add(ke);
+
+                keysPressed[k.sound] = false;
+            }
+
             if (k.down) {
-                if (!keysPressed[k.sound]) {
-                    Log.d("TOUCH", "key press " + k.sound);
-                    keysPressed[k.sound] = true;
-                }
 
                 if (!soundPlayer.isNotePlaying(k.sound)) {
                     soundPlayer.playNote(k.sound);
                     invalidate();
-
-                    //Create a key event and add it to the events list
-                    KeyEvent ke = new KeyEvent(k.sound, System.currentTimeMillis(),true);
-                    events.add(ke);
-
-                    Log.d("TOUCH", "key press " + k.sound);
                 } else {
                     releaseKey(k);
                 }
@@ -172,7 +213,7 @@ public class PianoView extends View {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                k.down = false;
+//                k.down = false;
                 handler.sendEmptyMessage(0);
             }
         }, 100);
