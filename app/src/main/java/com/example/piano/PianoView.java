@@ -12,10 +12,14 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.core.view.MotionEventCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 public class PianoView extends View {
 
@@ -26,6 +30,15 @@ public class PianoView extends View {
     private int keyWidth, height;
     public AudioSoundPlayer soundPlayer;
     private Boolean[] keysPressed = new Boolean[24];
+    private ArrayList<KeyEvent> events = new ArrayList<>();
+
+    public ArrayList<KeyEvent> GetKeyEvents (){
+        return events;
+    }
+
+    public void ResetKeyEvents(){
+        events.clear();
+    }
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -121,6 +134,12 @@ public class PianoView extends View {
                 if (!soundPlayer.isNotePlaying(k.sound)) {
                     soundPlayer.playNote(k.sound);
                     invalidate();
+
+                    //Create a key event and add it to the events list
+                    KeyEvent ke = new KeyEvent(k.sound, System.currentTimeMillis(),true);
+                    events.add(ke);
+
+                    Log.d("TOUCH", "key press " + k.sound);
                 } else {
                     releaseKey(k);
                 }

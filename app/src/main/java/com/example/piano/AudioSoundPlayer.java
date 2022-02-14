@@ -11,6 +11,7 @@ import android.util.SparseArray;
 import android.view.View;
 
 import java.io.InputStream;
+import java.util.List;
 
 public class AudioSoundPlayer {
 
@@ -18,15 +19,6 @@ public class AudioSoundPlayer {
     private Context context;
     private static final SparseArray<String> SOUND_MAP = new SparseArray<>();
     public static final int MAX_VOLUME = 100, CURRENT_VOLUME = 90;
-    private String password = "";
-
-    public String getPassword(){
-        return password;
-    }
-
-    public void ResetPassword(){
-        password = "";
-    }
 
     static {
         // white keys sounds
@@ -99,9 +91,6 @@ public class AudioSoundPlayer {
                 long fileSize = ad.getLength();
                 int bufferSize = 4096;
                 byte[] buffer = new byte[bufferSize];
-                password += Integer.toString(note) + "+";
-                System.out.println("Current password: " + password);
-                Log.d("PASSWORD", password);
                 audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_STEREO,
                         AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
 
