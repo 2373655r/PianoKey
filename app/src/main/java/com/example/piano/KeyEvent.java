@@ -12,4 +12,3 @@ public class KeyEvent {
         this.press = true;
     }
 }
-
