@@ -4,6 +4,8 @@ import android.os.Bundle;
 //import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import java.util.List;
+import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,7 +28,7 @@ public class PianoActivity extends AppCompatActivity {
         final int status =(Integer) testButton.getTag();
         if(status == 1) {
             //Start Recording user input
-            pianoView.soundPlayer.ResetPassword();
+            pianoView.ResetKeyEvents();
             testButton.setText("Stop");
             testButton.setTag(0); //pause
         } else {
@@ -34,16 +36,19 @@ public class PianoActivity extends AppCompatActivity {
             testButton.setText("Record");
             testButton.setTag(1); //pause
             //Check password entered
-            ValidatePassword(pianoView.soundPlayer.getPassword());
+            ValidatePassword(pianoView.GetKeyEvents());
         }
     }
 
-    public void ValidatePassword(String password){
+    public void ValidatePassword(ArrayList<KeyEvent> events){
         //May add more checks but for now just check if empty
-        if(password == ""){
+        if(events.size() == 0){
             System.out.println("No password entered");
         } else {
-            System.out.println("Password: " + password);
+            System.out.println("Password: ");
+            for(KeyEvent event : events){
+                System.out.println(event.sound);
+            }
         }
     }
 
