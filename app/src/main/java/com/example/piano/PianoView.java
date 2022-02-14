@@ -29,6 +29,7 @@ public class PianoView extends View {
     private ArrayList<Key> blacks = new ArrayList<>();
     private int keyWidth, height;
     public AudioSoundPlayer soundPlayer;
+    private Boolean[] keysPressed = new Boolean[24];
     private ArrayList<KeyEvent> events = new ArrayList<>();
 
     public ArrayList<KeyEvent> GetKeyEvents (){
@@ -50,6 +51,8 @@ public class PianoView extends View {
         yellow.setColor(Color.YELLOW);
         yellow.setStyle(Paint.Style.FILL);
         soundPlayer = new AudioSoundPlayer(context);
+
+        Arrays.fill(keysPressed, false);
     }
 
     @Override
@@ -96,9 +99,10 @@ public class PianoView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        boolean isDownAction = action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE;
-        boolean isUpAction = action == MotionEvent.ACTION_UP;
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
+
+        boolean isDownAction = action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_POINTER_DOWN;
+        boolean isUpAction = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP;
 
         for (int touchIndex = 0; touchIndex < event.getPointerCount(); touchIndex++) {
             float x = event.getX(touchIndex);
@@ -107,7 +111,13 @@ public class PianoView extends View {
             Key k = keyForCoords(x,y);
 
             if (k != null) {
-                k.down = isDownAction;
+
+                if (isUpAction && k.down) {
+                    k.down = false;
+                    keysPressed[k.sound] = false;
+                } else {
+                    k.down = isDownAction;
+                }
             }
         }
 
@@ -116,6 +126,11 @@ public class PianoView extends View {
 
         for (Key k : tmp) {
             if (k.down) {
+                if (!keysPressed[k.sound]) {
+                    Log.d("TOUCH", "key press " + k.sound);
+                    keysPressed[k.sound] = true;
+                }
+
                 if (!soundPlayer.isNotePlaying(k.sound)) {
                     soundPlayer.playNote(k.sound);
                     invalidate();
