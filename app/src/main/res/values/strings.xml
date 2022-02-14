@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Piano</string>
+    <string name="record">Record</string>
 </resources>
