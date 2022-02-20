@@ -12,11 +12,20 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="169dp"
+        android:layout_height="71dp"
         android:onClick="OnClickRecordButton"
         android:text="@string/record"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="158dp"
+        android:layout_height="69dp"
+        android:onClick="OnClickCreateButton"
+        android:text="@string/create"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
