@@ -100,20 +100,22 @@ public class PianoActivity extends AppCompatActivity {
         if(password != null){
             if(password != ""){
                 hiddenPassword = password;
+                Log.d("Hidden Pass","" + hiddenPassword);
+                DisplayMessage("Password Saved");
+                return;
             }
         }
-        Log.d("Hidden Pass","" + hiddenPassword);
-        DisplayMessage("Password Saved");
+        //Something wrong with password
+        Log.d("Hidden Pass","Invalid Password");
+        DisplayMessage("Invalid Password");
     }
 
     private String EventsToString(ArrayList<KeyEvent> events){
         String curPassword = "";
-        //Gonna need to add support for multi key press and timing
-        float longestEndTime = -1;
 
-        ArrayList<KeyEvent> buffer = new ArrayList<KeyEvent>();
-        for(KeyEvent e : events){
-            curPassword += e.note;
+        //Utils class handles turning events into chords
+        for (Chord chord : Utils.normalise(events)) {
+            curPassword += chord.toString() + "|";
         }
         return curPassword;
     }
@@ -131,18 +133,12 @@ public class PianoActivity extends AppCompatActivity {
                 Log.d("Login",event.note + "");
             }
 
-            String normalisedPassword = "";
-            for (Chord chord : Utils.normalise(events)) {
-                normalisedPassword += chord.toString() + "|";
-            }
-
             //Compare entered password to hidden password
             if(hiddenPassword == null){
                 Log.d("Login","No hidden password");
             } else{
                 Log.d("True Pass:",hiddenPassword);
                 Log.d("Given Pass:",enteredPassword);
-                Log.d("Normalised Pass:",normalisedPassword);
                 if(hiddenPassword.equals(enteredPassword)){
                     Log.d("Login", "Login Success");
                     DisplayMessage("Success");
