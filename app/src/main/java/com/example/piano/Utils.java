@@ -23,7 +23,7 @@ class KeyDuration {
 class Chord {
     boolean notes[];
     Chord() {
-        this.notes = new boolean[24];
+        this.notes = new boolean[25];
     }
     void setNote(int note) {
         this.notes[note] = true;
@@ -40,7 +40,7 @@ public class Utils {
         return overlap > 0 ? overlap/total : 0f;
     }
     public static ArrayList<KeyDuration> getDurations(ArrayList<KeyEvent> input) {
-        float keys[] = new float[24];
+        float keys[] = new float[25];
         Arrays.fill(keys, -1);
         ArrayList<KeyDuration> durations = new ArrayList<>();
 
