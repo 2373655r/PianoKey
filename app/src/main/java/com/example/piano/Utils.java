@@ -31,6 +31,14 @@ class Chord {
     void unsetNote(int note) {
         this.notes[note] = false;
     }
+
+    public String toString() {
+        int n = 0;
+        for (boolean note : this.notes) {
+            n = (n << 1) + (note ? 1 : 0);
+        }
+        return Integer.toString(n);
+    }
 }
 public class Utils {
 

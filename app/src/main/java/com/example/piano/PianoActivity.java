@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -111,12 +112,18 @@ public class PianoActivity extends AppCompatActivity {
                 Log.d("Login",event.note + "");
             }
 
+            String normalisedPassword = "";
+            for (Chord chord : Utils.normalise(events)) {
+                normalisedPassword += chord.toString() + "|";
+            }
+
             //Compare entered password to hidden password
             if(hiddenPassword == null){
                 Log.d("Login","No hidden password");
             } else{
                 Log.d("True Pass:",hiddenPassword);
                 Log.d("Given Pass:",enteredPassword);
+                Log.d("Normalised Pass:",normalisedPassword);
                 if(hiddenPassword.equals(enteredPassword)){
                     Log.d("Login", "Login Success");
                 } else {
