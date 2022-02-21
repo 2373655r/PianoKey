@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.List;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -94,7 +93,7 @@ public class PianoActivity extends AppCompatActivity {
         String curPassword = "";
         //Gonna need to add support for multi key press and timing
         for(KeyEvent e : events){
-            curPassword += e.sound;
+            curPassword += e.note;
         }
         return curPassword;
     }
@@ -109,7 +108,7 @@ public class PianoActivity extends AppCompatActivity {
             //Log keys pressed
             Log.d("Login","Password:");
             for(KeyEvent event : events){
-                Log.d("Login",event.sound + "");
+                Log.d("Login",event.note + "");
             }
 
             //Compare entered password to hidden password

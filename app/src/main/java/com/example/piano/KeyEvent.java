@@ -2,13 +2,13 @@ package com.example.piano;
 
 public class KeyEvent {
 
-    public int sound;
-    public float Time;
+    public int note;
+    public float time;
     public boolean press;
 
-    public KeyEvent(int sound, float downTime, boolean press){
-        this.sound =sound;
-        this.Time = downTime;
-        this.press = true;
+    public KeyEvent(int note, float time, boolean press){
+        this.note = note;
+        this.time  = time;
+        this.press = press;
     }
 }
