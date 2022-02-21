@@ -1,21 +1,31 @@
 package com.example.piano;
 
+import android.graphics.Color;
 import android.os.Bundle;
 //import android.support.v7.app.AppCompatActivity;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import java.nio.Buffer;
+import java.util.Collections;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import androidx.appcompat.app.AppCompatActivity;
+import java.io.File;  // Import the File class
+import java.io.IOException;  // Import the IOException class to handle errors
 
 public class PianoActivity extends AppCompatActivity {
 
     public Button recordButton;
     public Button createButton;
     public PianoView pianoView;
+
+    public TextView success;
 
     String hiddenPassword = null;
 
@@ -33,6 +43,10 @@ public class PianoActivity extends AppCompatActivity {
         createButton.setTag(1);
         createButton.setText("Create");
 
+        success= (TextView) findViewById(R.id.textView2);
+        success.setText("Success");
+        success.setTextColor(Color.BLUE);
+        success.setVisibility(View.INVISIBLE);
     }
 
     public void OnClickRecordButton(View view){
@@ -88,11 +102,16 @@ public class PianoActivity extends AppCompatActivity {
                 hiddenPassword = password;
             }
         }
+        Log.d("Hidden Pass","" + hiddenPassword);
+        DisplayMessage("Password Saved");
     }
 
     private String EventsToString(ArrayList<KeyEvent> events){
         String curPassword = "";
         //Gonna need to add support for multi key press and timing
+        float longestEndTime = -1;
+
+        ArrayList<KeyEvent> buffer = new ArrayList<KeyEvent>();
         for(KeyEvent e : events){
             curPassword += e.note;
         }
@@ -126,11 +145,40 @@ public class PianoActivity extends AppCompatActivity {
                 Log.d("Normalised Pass:",normalisedPassword);
                 if(hiddenPassword.equals(enteredPassword)){
                     Log.d("Login", "Login Success");
+                    DisplayMessage("Success");
+                    return;
                 } else {
                     Log.d("Login", "Login Failure");
                 }
             }
         }
+        DisplayMessage("Wrong Password");
+    }
+
+
+    //Flashed text s on screen then hides it again
+    public void DisplayMessage(String s){
+
+        if(s == ""){
+            return;
+        }
+
+        //Show user success
+        success.setText(s);
+        success.setVisibility(View.VISIBLE);
+
+        //Timer to hide success text
+        CountDownTimer timer = new CountDownTimer(2000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                success.setVisibility(View.INVISIBLE);
+            }
+        }.start();
     }
 
 }
