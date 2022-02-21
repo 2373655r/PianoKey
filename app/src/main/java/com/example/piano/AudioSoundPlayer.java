@@ -105,12 +105,7 @@ public class AudioSoundPlayer {
                 while (bytesWritten < fileSize - headerOffset) {
                     bytesRead = audioStream.read(buffer, 0, bufferSize);
                     bytesWritten += Math.abs(audioTrack.write(buffer, 0, bytesRead));
-                    System.out.println(bytesWritten);
                 }
-
-                System.out.println(bytesWritten);
-                System.out.println(fileSize);
-
 
                 audioTrack.stop();
                 audioTrack.release();
