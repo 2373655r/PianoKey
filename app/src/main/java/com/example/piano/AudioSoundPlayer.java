@@ -22,31 +22,31 @@ public class AudioSoundPlayer {
 
     static {
         // white keys sounds
-        SOUND_MAP.put(1, "c");
-        SOUND_MAP.put(2, "d");
-        SOUND_MAP.put(3, "e");
-        SOUND_MAP.put(4, "f");
-        SOUND_MAP.put(5, "g");
-        SOUND_MAP.put(6, "note_la");
-        SOUND_MAP.put(7, "note_si");
-        SOUND_MAP.put(8, "second_do");
-        SOUND_MAP.put(9, "second_re");
-        SOUND_MAP.put(10, "second_mi");
-        SOUND_MAP.put(11, "second_fa");
-        SOUND_MAP.put(12, "second_sol");
-        SOUND_MAP.put(13, "second_la");
-        SOUND_MAP.put(14, "second_si");
+        SOUND_MAP.put(1, "c3");
+        SOUND_MAP.put(2, "d3");
+        SOUND_MAP.put(3, "e3");
+        SOUND_MAP.put(4, "f3");
+        SOUND_MAP.put(5, "g3");
+        SOUND_MAP.put(6, "a4");
+        SOUND_MAP.put(7, "b4");
+        SOUND_MAP.put(8, "c4");
+        SOUND_MAP.put(9, "d4");
+        SOUND_MAP.put(10, "e4");
+        SOUND_MAP.put(11, "f4");
+        SOUND_MAP.put(12, "g4");
+        SOUND_MAP.put(13, "a5");
+        SOUND_MAP.put(14, "b5");
         // black keys sounds
-        SOUND_MAP.put(15, "do_dies");
-        SOUND_MAP.put(16, "re_dies");
-        SOUND_MAP.put(17, "fa_dies");
-        SOUND_MAP.put(18, "sol_dies");
-        SOUND_MAP.put(19, "la_dies");
-        SOUND_MAP.put(20, "second_dies_do");
-        SOUND_MAP.put(21, "second_dies_re");
-        SOUND_MAP.put(22, "second_dies_fa");
-        SOUND_MAP.put(23, "second_dies_sol");
-        SOUND_MAP.put(24, "second_dies_la");
+        SOUND_MAP.put(15, "c-3");
+        SOUND_MAP.put(16, "d-3");
+        SOUND_MAP.put(17, "f-3");
+        SOUND_MAP.put(18, "g-3");
+        SOUND_MAP.put(19, "a-4");
+        SOUND_MAP.put(20, "c-4");
+        SOUND_MAP.put(21, "d-4");
+        SOUND_MAP.put(22, "f-4");
+        SOUND_MAP.put(23, "g-4");
+        SOUND_MAP.put(24, "a-5");
     }
 
     public AudioSoundPlayer(Context context) {
@@ -94,20 +94,23 @@ public class AudioSoundPlayer {
                 audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_STEREO,
                         AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
 
-                float logVolume = (float) (1 - (Math.log(MAX_VOLUME - CURRENT_VOLUME) / Math.log(MAX_VOLUME)));
-                audioTrack.setStereoVolume(logVolume, logVolume);
-
                 audioTrack.play();
                 InputStream audioStream = null;
-                int headerOffset = 0x2C; long bytesWritten = 0; int bytesRead = 0;
+
+                int headerOffset = 44; long bytesWritten = 0; int bytesRead = 0;
 
                 audioStream = assetManager.open(path);
                 audioStream.read(buffer, 0, headerOffset);
 
                 while (bytesWritten < fileSize - headerOffset) {
                     bytesRead = audioStream.read(buffer, 0, bufferSize);
-                    bytesWritten += audioTrack.write(buffer, 0, bytesRead);
+                    bytesWritten += Math.abs(audioTrack.write(buffer, 0, bytesRead));
+                    System.out.println(bytesWritten);
                 }
+
+                System.out.println(bytesWritten);
+                System.out.println(fileSize);
+
 
                 audioTrack.stop();
                 audioTrack.release();

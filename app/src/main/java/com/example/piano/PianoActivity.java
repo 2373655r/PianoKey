@@ -92,6 +92,7 @@ public class PianoActivity extends AppCompatActivity {
 
     private String EventsToString(ArrayList<KeyEvent> events){
         String curPassword = "";
+        //Gonna need to add support for multi key press and timing
         for(KeyEvent e : events){
             curPassword += e.sound;
         }
