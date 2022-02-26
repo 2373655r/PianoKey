@@ -1,22 +1,30 @@
 package com.example.piano;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 class KeyDuration {
-    int   note;
-    float start;
-    float end;
-    float midpoint;
-    float duration;
+    int  note;
+    long start;
+    long end;
+    long midpoint;
+    long duration;
 
-    KeyDuration(int note, float start, float end) {
+    KeyDuration(int note, long start, long end) {
         this.note     = note;
         this.start    = start;
         this.end      = end;
         this.duration = end - start;
         this.midpoint = this.start + (this.duration/2);
+    }
+
+    public String toString() {
+        return this.note + "@" + this.duration;
     }
 }
 
@@ -42,21 +50,25 @@ class Chord {
 }
 public class Utils {
 
-    public static float getOverlap(KeyDuration a, KeyDuration b) {
-        float total   = Math.max(a.end, b.end) - Math.min(a.start, b.start);
-        float overlap = Math.min(a.end, b.end) - Math.max(a.start, b.start);
+    public static double getOverlap(KeyDuration a, KeyDuration b) {
+        double total   = Math.max(a.end, b.end) - Math.min(a.start, b.start);
+        double overlap = Math.min(a.end, b.end) - Math.max(a.start, b.start);
+        Log.d("Total for "   + a + " + " + b, Double.toString(total));
+        Log.d("Overlap for " + a + " + " + b, Double.toString(overlap));
         return overlap > 0 ? overlap/total : 0f;
     }
     public static ArrayList<KeyDuration> getDurations(ArrayList<KeyEvent> input) {
-        float keys[] = new float[25];
+        long keys[] = new long[25];
         Arrays.fill(keys, -1);
         ArrayList<KeyDuration> durations = new ArrayList<>();
 
         for (KeyEvent event : input) {
+            Log.d("Key event", event.note + "@" + event.time + (event.press ? "D" : "U"));
             if (event.press  && keys[event.note] < 0) {
                 keys[event.note] = event.time;
-            } else if (!event.press && keys[event.note] > 0) {
-                durations.add(new KeyDuration(event.note, event.time, keys[event.note]));
+            } else if (!event.press && keys[event.note] >= 0) {
+                durations.add(new KeyDuration(event.note, keys[event.note], event.time));
+                keys[event.note] = -1;
             }
         }
         Collections.sort(durations, (KeyDuration d1, KeyDuration d2) ->
@@ -65,23 +77,33 @@ public class Utils {
         return durations;
     }
 
-    static float THRESHOLD = 0.5f;
+    static double THRESHOLD = 0.5;
 
     public static ArrayList<Chord> normalise(ArrayList<KeyEvent> input) {
         ArrayList<Chord> chords = new ArrayList<>();
         ArrayList<KeyDuration> durations = getDurations(input);
-        for (int i = 0; i < durations.size(); i++) {
+
+        //for (int i = 0; i < durations.size(); i++) {
+        int i = 0;
+        while (i < durations.size()) {
             KeyDuration current = durations.get(i);
+            Log.d("KeyDuration", current.toString());
             Chord chord = new Chord();
             chord.setNote(current.note);
-            for (int j = i+1; j < durations.size(); j++) {
+
+            //for (int j = i+1; j < durations.size(); j++) {
+            int j = i+1;
+            while (j < durations.size()) {
                 KeyDuration next = durations.get(j);
                 if (next.start > current.end) { break; }
                 if (getOverlap(current, next) > THRESHOLD) {
                     chord.setNote(next.note);
-                }
+                    durations.remove(next);
+                } else { j++; }
             }
+
             chords.add(chord);
+            i++;
         }
         return chords;
     }
