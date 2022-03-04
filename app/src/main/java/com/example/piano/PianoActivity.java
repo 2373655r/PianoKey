@@ -96,7 +96,8 @@ public class PianoActivity extends AppCompatActivity {
     }
 
     private void SavePassword(ArrayList<KeyEvent> events){
-        String password = EventsToString(events);
+        //String password = EventsToString(events);
+        String password = "";
         if(password != null){
             if(password != ""){
                 hiddenPassword = password;

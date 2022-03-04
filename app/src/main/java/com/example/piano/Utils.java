@@ -30,9 +30,24 @@ class KeyDuration {
 
 class Chord {
     boolean notes[];
+
     Chord() {
         this.notes = new boolean[25];
     }
+
+    Chord(boolean[] notes) {
+        this.notes = notes;
+    }
+
+    Chord(String strChord) {
+        this.notes = new boolean[25];
+        int intChord = Integer.parseInt(strChord);
+        for (int i = 0; i < notes.length; i++) {
+            int j = notes.length - 1 - i;
+            notes[i] = ((intChord >> j) & 1) == 1;
+        }
+    }
+
     void setNote(int note) {
         this.notes[note] = true;
     }
@@ -104,6 +119,14 @@ public class Utils {
 
             chords.add(chord);
             i++;
+        }
+        return chords;
+    }
+
+    public static ArrayList<Chord> makeMelody(String melodyStr) {
+        ArrayList<Chord> chords = new ArrayList<>();
+        for (String chord : melodyStr.split("\\|")) {
+            chords.add(new Chord(chord));
         }
         return chords;
     }
